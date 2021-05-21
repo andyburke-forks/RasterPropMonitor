@@ -340,6 +340,7 @@ namespace JSI
             {
                 return;
             }
+
             if (activePage.GlobalButtonClick(buttonID))
             {
                 PlayClickSound(audioOutput);

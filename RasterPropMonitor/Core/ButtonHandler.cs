@@ -195,6 +195,14 @@ namespace JSI
             }
 
             buttonBehaviour.pageTriggers.Add(new PageTriggerSet(handlerFunction, thatPage));
+            buttonBehaviour.clickHandlers.Add( () => {
+                Core.Events.Emit(new Core.Event("buttonBehavior.monitor_page", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                {
+                    buttonName = buttonName,
+                    thatPage_pageNumber = thatPage.pageNumber
+                }));
+
+            });
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
         }
 
@@ -217,6 +225,13 @@ namespace JSI
                 idValue = numericID
             });
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
+            buttonBehaviour.clickHandlers.Add(() => {
+                Core.Events.Emit(new Core.Event("buttonBehavior.clicked_with_id", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                {
+                    buttonName = buttonName,
+                    numericID = numericID
+                }));
+            });
         }
 
         public static void CreateButton(InternalProp thatProp, string buttonName, Action handlerFunction, Action releaseHandlerFunction = null, InternalModel thatModel = null)
@@ -232,6 +247,13 @@ namespace JSI
                 buttonBehaviour.releaseHandlers.Add(releaseHandlerFunction);
             }
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
+            buttonBehaviour.clickHandlers.Add(() => {
+                Core.Events.Emit(new Core.Event("buttonBehavior.clicked", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                {
+                    buttonName = buttonName
+                }));
+            });
+
         }
     }
 }

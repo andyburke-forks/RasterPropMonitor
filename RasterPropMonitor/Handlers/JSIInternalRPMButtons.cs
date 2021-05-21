@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using JSI.Core;
 
 namespace JSI
 {
@@ -44,6 +45,14 @@ namespace JSI
         /// </summary>
         /// <param name="state"></param>
         public void ButtonActivateReserves(bool state)
+        {
+            Events.Emit(new Event("ButtonActivateReserves", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonActivateReserves(state);
+        }
+        public void _ButtonActivateReserves(bool state)
         {
             if (vessel == null)
             {
@@ -81,6 +90,14 @@ namespace JSI
         // Analysis disable once UnusedParameter
         public void ButtonClearNodes(bool state)
         {
+            Events.Emit(new Event("ButtonClearNodes", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonClearNodes(state);
+        }
+        public void _ButtonClearNodes(bool state)
+        {
             if (vessel != null)
             {
                 JUtil.RemoveAllNodes(vessel.patchedConicSolver);
@@ -108,6 +125,14 @@ namespace JSI
         /// <param name="state"></param>
         public void ButtonClearTarget(bool state)
         {
+            Events.Emit(new Event("ButtonClearTarget", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonClearTarget(state);
+        }
+        public void _ButtonClearTarget(bool state)
+        {
             FlightGlobals.fetch.SetVesselTarget((ITargetable)null);
         }
 
@@ -125,6 +150,15 @@ namespace JSI
         /// </summary>
         /// <param name="state">"true" for on, "false" for off</param>
         public void ButtonEnableEngines(bool state)
+        {
+            Events.Emit(new Event("ButtonEnableEngines", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonEnableEngines(state);
+        }
+
+        public void _ButtonEnableEngines(bool state)
         {
             if (vessel != null)
             {
@@ -153,6 +187,14 @@ namespace JSI
         /// <param name="state"></param>
         public void ButtonEnableElectricGenerator(bool state)
         {
+            Events.Emit(new Event("ButtonEnableElectricGenerator", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonEnableElectricGenerator(state);
+        }
+        public void _ButtonEnableElectricGenerator(bool state)
+        {
             if (vessel != null)
             {
                 RPMVesselComputer comp = RPMVesselComputer.Instance(vessel);
@@ -180,6 +222,14 @@ namespace JSI
         /// </summary>
         /// <param name="state"></param>
         public void ButtonPrecisionMode(bool state)
+        {
+            Events.Emit(new Event("ButtonPrecisionMode", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonPrecisionMode(state);
+        }
+        public void _ButtonPrecisionMode(bool state)
         {
             if (vessel != null)
             {
@@ -223,7 +273,15 @@ namespace JSI
         /// Common function for setting the autopilot mode
         /// </summary>
         /// <param name="mode"></param>
-        private void ButtonSASModeClick(VesselAutopilot.AutopilotMode mode)
+        public void ButtonSASModeClick(VesselAutopilot.AutopilotMode mode)
+        {
+            Events.Emit(new Event("ButtonSASModeClick", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                mode = mode
+            }));
+            _ButtonSASModeClick(mode);
+        }
+        private void _ButtonSASModeClick(VesselAutopilot.AutopilotMode mode)
         {
             if (vessel != null)
             {
@@ -426,6 +484,11 @@ namespace JSI
          */
         public void ButtonSpeedMode(bool ignored)
         {
+            Events.Emit(new Event("ButtonSpeedMode", vessel != null ? vessel.id : Guid.Empty, null));
+            _ButtonSpeedMode(ignored);
+        }
+        public void _ButtonSpeedMode(bool ignored)
+        {
             FlightGlobals.CycleSpeedModes();
         }
 
@@ -445,6 +508,14 @@ namespace JSI
          * the name they use, we will have to be updated.
          */
         public void ButtonStageLock(bool state)
+        {
+            Events.Emit(new Event("ButtonStageLock", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonStageLock(state);
+        }
+        public void _ButtonStageLock(bool state)
         {
             if (state)
             {
@@ -469,6 +540,14 @@ namespace JSI
         /// </summary>
         /// <param name="state"></param>
         public void ButtonCutThrottle(bool state)
+        {
+            Events.Emit(new Event("ButtonCutThrottle", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonCutThrottle(state);
+        }
+        public void _ButtonCutThrottle(bool state)
         {
             if (state && vessel != null)
             {
@@ -499,6 +578,14 @@ namespace JSI
         /// <param name="state"></param>
         public void ButtonFullThrottle(bool state)
         {
+            Events.Emit(new Event("ButtonFullThrottle", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _ButtonFullThrottle(state);
+        }
+        public void _ButtonFullThrottle(bool state)
+        {
             if (state && vessel != null)
             {
                 float throttle = vessel.ctrlState.mainThrottle;
@@ -518,6 +605,14 @@ namespace JSI
         /// </summary>
         /// <param name="setting"></param>
         public void SetThrottle(double setting)
+        {
+            Events.Emit(new Event("SetThrottle", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                setting = setting
+            }));
+            _SetThrottle(setting);
+        }
+        public void _SetThrottle(double setting)
         {
             if (vessel != null)
             {
@@ -552,6 +647,11 @@ namespace JSI
         /// <param name="ignored">Ignored</param>
         public void RecoverVessel(bool ignored)
         {
+            Events.Emit(new Event("RecoverVessel", vessel != null ? vessel.id : Guid.Empty, null));
+            _RecoverVessel(ignored);
+        }
+        public void _RecoverVessel(bool ignored)
+        {
             if (vessel != null && vessel.IsRecoverable)
             {
 				JSI.Core.JSIVesselRecovery.Recover(vessel);
@@ -584,6 +684,14 @@ namespace JSI
         /// <param name="state">New state - must be 'false' to trigger the undock event</param>
         public void DockUndock(bool state)
         {
+            Events.Emit(new Event("DockUndock", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _DockUndock(state);
+        }
+        public void _DockUndock(bool state)
+        {
             if (vessel == null || state == true)
             {
                 return;
@@ -601,6 +709,14 @@ namespace JSI
         /// </summary>
         /// <param name="state">New state - must be 'false' to trigger</param>
         public void DockDetach(bool state)
+        {
+            Events.Emit(new Event("DockDetach", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _DockDetach(state);
+        }
+        public void _DockDetach(bool state)
         {
             if (vessel == null || state == true)
             {
@@ -696,6 +812,14 @@ namespace JSI
         /// <param name="state"></param>
         public void SetThrustReverser(bool state)
         {
+            Events.Emit(new Event("SetThrustReverser", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _SetThrustReverser(state);
+        }
+        public void _SetThrustReverser(bool state)
+        {
             if (vessel != null)
             {
                 RPMVesselComputer comp = RPMVesselComputer.Instance(vessel);
@@ -759,6 +883,14 @@ namespace JSI
         /// <param name="setting"></param>
         public void SetWheelBrakes(double setting)
         {
+            Events.Emit(new Event("SetWheelBrakes", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                setting = setting
+            }));
+            _SetWheelBrakes(setting);
+        }
+        public void _SetWheelBrakes(double setting)
+        {
             if (vessel != null)
             {
                 float newsetting = Mathf.Clamp((float)setting, 0.0f, 200.0f);
@@ -821,6 +953,15 @@ namespace JSI
         /// <param name="state"></param>
         public void GimbalLock(bool state)
         {
+            Events.Emit(new Event("GimbalLock", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _GimbalLock(state);
+        }
+
+        public void _GimbalLock(bool state)
+        {
             if (vessel == null)
             {
                 return;
@@ -853,6 +994,14 @@ namespace JSI
         /// </summary>
         /// <param name="enabled"></param>
         public void RadarEnable(bool enabled)
+        {
+            Events.Emit(new Event("RadarEnable", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                enabled = enabled
+            }));
+            _RadarEnable(enabled);
+        }
+        public void _RadarEnable(bool enabled)
         {
             if (vessel == null)
             {
@@ -930,6 +1079,14 @@ namespace JSI
         /// <param name="state"></param>
         public void SetDeploySolarPanels(bool state)
         {
+            Events.Emit(new Event("SetDeploySolarPanels", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _SetDeploySolarPanels(state);
+        }
+        public void _SetDeploySolarPanels(bool state)
+        {
             if (vessel != null)
             {
                 RPMVesselComputer comp = RPMVesselComputer.Instance(vessel);
@@ -957,6 +1114,14 @@ namespace JSI
         /// </summary>
         /// <param name="newstate"></param>
         public void SetEnginesPrimaryMode(bool newstate)
+        {
+            Events.Emit(new Event("SetEnginesPrimaryMode", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                newstate = newstate
+            }));
+            _SetEnginesPrimaryMode(newstate);
+        }
+        public void _SetEnginesPrimaryMode(bool newstate)
         {
             try
             {
@@ -1012,6 +1177,14 @@ namespace JSI
         /// </summary>
         /// <param name="limit"></param>
         public void SetThrottleLimit(double limit)
+        {
+            Events.Emit(new Event("SetThrottleLimit", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                limit = limit
+            }));
+            _SetThrottleLimit(limit);
+        }
+        public void _SetThrottleLimit(double limit)
         {
             if (vessel != null)
             {
@@ -1149,6 +1322,14 @@ namespace JSI
          */
         public void SetAllTrimNeutral(bool state)
         {
+            Events.Emit(new Event("SetAllTrimNeutral", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _SetAllTrimNeutral(state);
+        }
+        public void _SetAllTrimNeutral(bool state)
+        {
             FlightInputHandler.state.ResetTrim();
         }
 
@@ -1156,6 +1337,14 @@ namespace JSI
          * Resets pitch trim to neutral
          */
         public void SetPitchTrimNeutral(bool state)
+        {
+            Events.Emit(new Event("SetPitchTrimNeutral", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _SetPitchTrimNeutral(state);
+        }
+        public void _SetPitchTrimNeutral(bool state)
         {
             FlightInputHandler.state.pitchTrim = 0.0f;
         }
@@ -1165,6 +1354,14 @@ namespace JSI
          */
         public void SetPitchTrim(double trimPercent)
         {
+            Events.Emit(new Event("SetPitchTrim", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                trimPercent = trimPercent
+            }));
+            _SetPitchTrim(trimPercent);
+        }
+        public void _SetPitchTrim(double trimPercent)
+        {
             FlightInputHandler.state.pitchTrim = (float)(trimPercent.Clamp(-100.0, 100.0)) / 100.0f;
         }
 
@@ -1172,6 +1369,14 @@ namespace JSI
          * Resets roll trim to neutral
          */
         public void SetRollTrimNeutral(bool state)
+        {
+            Events.Emit(new Event("SetRollTrimNeutral", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _SetRollTrimNeutral(state);
+        }
+        public void _SetRollTrimNeutral(bool state)
         {
             FlightInputHandler.state.rollTrim = 0.0f;
         }
@@ -1181,6 +1386,14 @@ namespace JSI
          */
         public void SetRollTrim(double trimPercent)
         {
+            Events.Emit(new Event("SetRollTrim", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                trimPercent = trimPercent
+            }));
+            _SetRollTrim(trimPercent);
+        }
+        public void _SetRollTrim(double trimPercent)
+        {
             FlightInputHandler.state.rollTrim = (float)(trimPercent.Clamp(-100.0, 100.0)) / 100.0f;
         }
 
@@ -1189,6 +1402,14 @@ namespace JSI
          */
         public void SetYawTrimNeutral(bool state)
         {
+            Events.Emit(new Event("SetYawTrimNeutral", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                state = state
+            }));
+            _SetYawTrimNeutral(state);
+        }
+        public void _SetYawTrimNeutral(bool state)
+        {
             FlightInputHandler.state.yawTrim = 0.0f;
         }
 
@@ -1196,6 +1417,14 @@ namespace JSI
          * Sets yaw trim to the desired percent (-100 to 100)
          */
         public void SetYawTrim(double trimPercent)
+        {
+            Events.Emit(new Event("SetYawTrim", vessel != null ? vessel.id : Guid.Empty, new
+            {
+                trimPercent = trimPercent
+            }));
+            _SetYawTrim(trimPercent);
+        }
+        public void _SetYawTrim(double trimPercent)
         {
             FlightInputHandler.state.yawTrim = (float)(trimPercent.Clamp(-100.0, 100.0)) / 100.0f;
         }
