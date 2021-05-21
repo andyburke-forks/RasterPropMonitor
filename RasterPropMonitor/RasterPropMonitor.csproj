@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auxiliary modules\JSIEventLogger.cs" />
     <Compile Include="Auxiliary modules\JSICallbackAnimator.cs" />
     <Compile Include="Auxiliary modules\JSIFlashModule.cs" />
     <Compile Include="Auxiliary modules\JSILabel.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Auxiliary modules\JSINumericInput.cs" />
     <Compile Include="Auxiliary modules\JSIRadar.cs" />
     <Compile Include="Auxiliary modules\JSIThrustReverser.cs" />
+    <Compile Include="Core\Events.cs" />
     <Compile Include="Core\JSIVesselRecovery.cs" />
     <Compile Include="Core\AeroExtensions.cs" />
     <Compile Include="Core\CustomVariable.cs" />
@@ -259,6 +261,6 @@
     <None Include="Shaders\RPM-FontShader.shader" />
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)GameData\JSI\RasterPropMonitor\Plugins\$(TargetFileName)</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)GameData\JSI\RasterPropMonitor\Plugins\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
