@@ -196,8 +196,9 @@ namespace JSI
 
             buttonBehaviour.pageTriggers.Add(new PageTriggerSet(handlerFunction, thatPage));
             buttonBehaviour.clickHandlers.Add( () => {
-                Core.Events.Emit(new Core.Event("buttonBehavior.monitor_page", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event(thatProp.propID + "-" + buttonName + "-monitor_page-" + thatPage.pageNumber, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
                 {
+                    propID = thatProp.propID,
                     buttonName = buttonName,
                     thatPage_pageNumber = thatPage.pageNumber
                 }));
@@ -226,8 +227,9 @@ namespace JSI
             });
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("buttonBehavior.clicked_with_id", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event(thatProp.propID + "-" + buttonName + "-clicked-" + numericID, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
                 {
+                    propID = thatProp.propID,
                     buttonName = buttonName,
                     numericID = numericID
                 }));
@@ -248,8 +250,9 @@ namespace JSI
             }
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("buttonBehavior.clicked", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event(thatProp.propID + "-" + buttonName + "-clicked", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
                 {
+                    propID = thatProp.propID,
                     buttonName = buttonName
                 }));
             });
