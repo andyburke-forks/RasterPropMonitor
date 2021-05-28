@@ -26,6 +26,41 @@ namespace JSI
 {
     public class SmarterButton : MonoBehaviour
     {
+        public static readonly Dictionary<string, SmarterButton> buttons = new Dictionary<string, SmarterButton>();
+        public static void Replay( string event_key )
+        {
+            string[] tokens = event_key.Split(':');
+            if ( tokens.Length != 2 )
+            {
+                Debug.LogError("Malformed replay event: " + event_key);
+                return;
+            }
+
+            string action = tokens[0];
+            string key = tokens[1];
+
+            SmarterButton button = null;
+            buttons.TryGetValue(key, out button);
+            if ( button == null )
+            {
+                Debug.LogError("Could not find button: " + key);
+                return;
+            }
+
+            switch( action )
+            {
+                case "click":
+                    button.OnMouseDown();
+                    break;
+                case "release":
+                    button.OnMouseUp();
+                    break;
+                default:
+                    Debug.LogError("Unknown action: " + action);
+                    break;
+            }
+        }
+
         private readonly List<HandlerID> clickHandlersID = new List<HandlerID>();
         private readonly List<HandlerID> releaseHandlersID = new List<HandlerID>();
         private readonly List<Action> clickHandlers = new List<Action>();
@@ -81,26 +116,6 @@ namespace JSI
 
         public void OnMouseDown()
         {
-            if (part != null)
-            {
-                Kerbal k = part.FindCurrentKerbal();
-                if (k != null)
-                {
-                    // Disallow tourists using props
-                    if (k.protoCrewMember.type == ProtoCrewMember.KerbalType.Tourist)
-                    {
-                        if (UnityEngine.Random.Range(0, 10) > 8)
-                        {
-                            ScreenMessages.PostScreenMessage(string.Format("Stop touching buttons, {0}!", k.name), 4.0f, ScreenMessageStyle.UPPER_CENTER);
-                        }
-                        else
-                        {
-                            ScreenMessages.PostScreenMessage(string.Format("Tourist {0} may not operate equipment.", k.name), 4.0f, ScreenMessageStyle.UPPER_CENTER);
-                        }
-                        return;
-                    }
-                }
-            }
             foreach (PageTriggerSet monitor in pageTriggers)
             {
                 monitor.ShowNext();
@@ -195,16 +210,32 @@ namespace JSI
             }
 
             buttonBehaviour.pageTriggers.Add(new PageTriggerSet(handlerFunction, thatPage));
-            buttonBehaviour.clickHandlers.Add( () => {
-                Core.Events.Emit(new Core.Event(thatProp.propID + "-" + buttonName + "-monitor_page-" + thatPage.pageNumber, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+            buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
+
+            string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-monitor_page-" + thatPage.pageNumber;
+
+            buttonBehaviour.clickHandlers.Add(() => {
+                Core.Events.Emit(new Core.Event("click:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
                 {
                     propID = thatProp.propID,
                     buttonName = buttonName,
                     thatPage_pageNumber = thatPage.pageNumber
                 }));
-
             });
-            buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
+
+            buttonBehaviour.releaseHandlers.Add(() => {
+                Core.Events.Emit(new Core.Event("release:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                {
+                    propID = thatProp.propID,
+                    buttonName = buttonName,
+                    thatPage_pageNumber = thatPage.pageNumber
+                }));
+            });
+
+            if ( !buttons.ContainsKey( key ) )
+            {
+                buttons.Add(key, buttonBehaviour);
+            }
         }
 
         public static void CreateButton(InternalProp thatProp, string buttonName, int numericID, Action<int> clickHandlerFunction, Action<int> releaseHandlerFunction, InternalModel thatModel = null)
@@ -226,14 +257,29 @@ namespace JSI
                 idValue = numericID
             });
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
+
+            string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked-" + numericID;
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(thatProp.propID + "-" + buttonName + "-clicked-" + numericID, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("click:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
                 {
                     propID = thatProp.propID,
                     buttonName = buttonName,
                     numericID = numericID
                 }));
             });
+            buttonBehaviour.releaseHandlers.Add(() => {
+                Core.Events.Emit(new Core.Event("release:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                {
+                    propID = thatProp.propID,
+                    buttonName = buttonName,
+                    numericID = numericID
+                }));
+            });
+
+            if (!buttons.ContainsKey(key))
+            {
+                buttons.Add(key, buttonBehaviour);
+            }
         }
 
         public static void CreateButton(InternalProp thatProp, string buttonName, Action handlerFunction, Action releaseHandlerFunction = null, InternalModel thatModel = null)
@@ -249,14 +295,28 @@ namespace JSI
                 buttonBehaviour.releaseHandlers.Add(releaseHandlerFunction);
             }
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
+
+            string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked";
+
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(thatProp.propID + "-" + buttonName + "-clicked", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("click:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                {
+                    propID = thatProp.propID,
+                    buttonName = buttonName
+                }));
+            });
+            buttonBehaviour.releaseHandlers.Add(() => {
+                Core.Events.Emit(new Core.Event("release:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
                 {
                     propID = thatProp.propID,
                     buttonName = buttonName
                 }));
             });
 
+            if (!buttons.ContainsKey(key))
+            {
+                buttons.Add(key, buttonBehaviour);
+            }
         }
     }
 }
