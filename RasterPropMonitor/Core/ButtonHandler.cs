@@ -27,27 +27,17 @@ namespace JSI
     public class SmarterButton : MonoBehaviour
     {
         public static readonly Dictionary<string, SmarterButton> buttons = new Dictionary<string, SmarterButton>();
-        public static void Replay( string event_key )
+        public static void Replay( JSI.Core.Event _event )
         {
-            string[] tokens = event_key.Split(':');
-            if ( tokens.Length != 2 )
-            {
-                Debug.LogError("Malformed replay event: " + event_key);
-                return;
-            }
-
-            string action = tokens[0];
-            string key = tokens[1];
-
             SmarterButton button = null;
-            buttons.TryGetValue(key, out button);
+            buttons.TryGetValue( _event.data.key, out button);
             if ( button == null )
             {
-                Debug.LogError("Could not find button: " + key);
+                Debug.LogError("Could not find button: " + _event.data.key);
                 return;
             }
 
-            switch( action )
+            switch( _event.type )
             {
                 case "click":
                     button.OnMouseDown();
@@ -56,7 +46,7 @@ namespace JSI
                     button.OnMouseUp();
                     break;
                 default:
-                    Debug.LogError("Unknown action: " + action);
+                    Debug.LogError("Unknown event type: " + _event.type);
                     break;
             }
         }
@@ -215,21 +205,25 @@ namespace JSI
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-monitor_page-" + thatPage.pageNumber;
 
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("click:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
+                    key = key,
                     propID = thatProp.propID,
                     buttonName = buttonName,
-                    thatPage_pageNumber = thatPage.pageNumber
+                    pageNumber = thatPage.pageNumber,
+                    numericID = -1
                 }));
             });
 
             buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("release:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
+                    key = key,
                     propID = thatProp.propID,
                     buttonName = buttonName,
-                    thatPage_pageNumber = thatPage.pageNumber
-                }));
+                    pageNumber = thatPage.pageNumber,
+                    numericID = -1
+                } ));
             });
 
             if ( !buttons.ContainsKey( key ) )
@@ -259,24 +253,29 @@ namespace JSI
             buttonBehaviour.part = (thatModel == null) ? thatProp.part : thatModel.part;
 
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked-" + numericID;
+
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("click:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
+                    key = key,
                     propID = thatProp.propID,
                     buttonName = buttonName,
+                    pageNumber = -1,
                     numericID = numericID
                 }));
             });
             buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("release:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
+                    key = key,
                     propID = thatProp.propID,
                     buttonName = buttonName,
+                    pageNumber = -1,
                     numericID = numericID
                 }));
             });
 
-            if (!buttons.ContainsKey(key))
+            if ( !buttons.ContainsKey(key))
             {
                 buttons.Add(key, buttonBehaviour);
             }
@@ -299,21 +298,27 @@ namespace JSI
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked";
 
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("click:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData 
                 {
+                    key = key,
                     propID = thatProp.propID,
-                    buttonName = buttonName
+                    buttonName = buttonName,
+                    pageNumber = -1,
+                    numericID = -1
                 }));
             });
             buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("release:" + key, thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new
+                Core.Events.Emit(new Core.Event("release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
+                    key = key,
                     propID = thatProp.propID,
-                    buttonName = buttonName
-                }));
+                    buttonName = buttonName,
+                    pageNumber = -1,
+                    numericID = -1
+                } ) );
             });
 
-            if (!buttons.ContainsKey(key))
+            if ( !buttons.ContainsKey(key))
             {
                 buttons.Add(key, buttonBehaviour);
             }

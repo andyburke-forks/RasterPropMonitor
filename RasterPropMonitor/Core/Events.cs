@@ -2,18 +2,33 @@
 
 namespace JSI.Core
 {
+    public class EventData {
+        public string key { get; internal set; }
+        public int propID { get; internal set; }
+        public string buttonName { get; internal set; }
+        public int pageNumber { get; internal set; }
+        public int numericID { get; internal set; }
+    }
+
     public class Event : EventArgs
     {
-        public string name { get; internal set; }
+        public string type { get; internal set; }
         public Guid vessel_id { get; internal set; }
-        public object data { get; internal set; }
-        public Event(string name, Guid vessel_id, object data)
+        public EventData data { get; internal set; }
+        public Event(string type, Guid vessel_id, EventData data )
         {
-            this.name = name;
+            this.type = type;
             this.vessel_id = vessel_id;
             this.data = data;
         }
     }
+
+
+    // data:
+    // propID = thatProp.propID, // always present
+    // buttonName = buttonName, // always present
+    // thatPage_pageNumber = thatPage.pageNumber, // -1 or a page number
+    // numericID = -1 // -1 or a numericID
 
 
     public delegate void EventHandler(Event _event);
