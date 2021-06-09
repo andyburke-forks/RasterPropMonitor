@@ -12,11 +12,13 @@ namespace JSI.Core
 
     public class Event : EventArgs
     {
+        public Guid id { get; internal set; }
         public string type { get; internal set; }
         public Guid vessel_id { get; internal set; }
         public EventData data { get; internal set; }
-        public Event(string type, Guid vessel_id, EventData data )
+        public Event( Guid id, string type, Guid vessel_id, EventData data )
         {
+            this.id = ( id == Guid.Empty ? Guid.NewGuid() : id );
             this.type = type;
             this.vessel_id = vessel_id;
             this.data = data;

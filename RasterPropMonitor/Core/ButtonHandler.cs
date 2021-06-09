@@ -27,28 +27,36 @@ namespace JSI
     public class SmarterButton : MonoBehaviour
     {
         public static readonly Dictionary<string, SmarterButton> buttons = new Dictionary<string, SmarterButton>();
+
         public static void Replay( JSI.Core.Event _event )
         {
-            SmarterButton button = null;
-            buttons.TryGetValue( _event.data.key, out button);
-            if ( button == null )
-            {
-                Debug.LogError("Could not find button: " + _event.data.key);
-                return;
+            try {
+                SmarterButton button = null;
+                buttons.TryGetValue(_event.data.key, out button);
+                if (button != null)
+                {
+                    switch (_event.type)
+                    {
+                        case "click":
+                            button.OnMouseDown();
+                            break;
+                        case "release":
+                            button.OnMouseUp();
+                            break;
+                        default:
+                            Debug.LogError("Unknown event type: " + _event.type);
+                            break;
+                    }
+                }
+                else
+				{
+                    Debug.LogError("Could not find button: " + _event.data.key);
+                }
             }
-
-            switch( _event.type )
-            {
-                case "click":
-                    button.OnMouseDown();
-                    break;
-                case "release":
-                    button.OnMouseUp();
-                    break;
-                default:
-                    Debug.LogError("Unknown event type: " + _event.type);
-                    break;
-            }
+            catch( Exception ex )
+			{
+                Debug.LogError( ex.ToString() );
+			}
         }
 
         private readonly List<HandlerID> clickHandlersID = new List<HandlerID>();
@@ -205,7 +213,7 @@ namespace JSI
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-monitor_page-" + thatPage.pageNumber;
 
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                Core.Events.Emit(new Core.Event(Guid.Empty, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
                     key = key,
                     propID = thatProp.propID,
@@ -216,7 +224,7 @@ namespace JSI
             });
 
             buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                Core.Events.Emit(new Core.Event(Guid.Empty, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
                     key = key,
                     propID = thatProp.propID,
@@ -255,7 +263,7 @@ namespace JSI
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked-" + numericID;
 
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                Core.Events.Emit(new Core.Event(Guid.Empty, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
                     key = key,
                     propID = thatProp.propID,
@@ -265,7 +273,7 @@ namespace JSI
                 }));
             });
             buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                Core.Events.Emit(new Core.Event(Guid.Empty, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
                     key = key,
                     propID = thatProp.propID,
@@ -298,7 +306,7 @@ namespace JSI
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked";
 
             buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData 
+                Core.Events.Emit(new Core.Event(Guid.Empty, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData 
                 {
                     key = key,
                     propID = thatProp.propID,
@@ -308,7 +316,7 @@ namespace JSI
                 }));
             });
             buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event("release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                Core.Events.Emit(new Core.Event(Guid.Empty, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
                 {
                     key = key,
                     propID = thatProp.propID,
