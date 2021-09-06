@@ -27,9 +27,11 @@ namespace JSI
     public class SmarterButton : MonoBehaviour
     {
         public static readonly Dictionary<string, SmarterButton> buttons = new Dictionary<string, SmarterButton>();
+        public static Guid replaying_id = Guid.Empty;
 
         public static void Replay( JSI.Core.Event _event )
         {
+            replaying_id = _event.id;
             try {
                 SmarterButton button = null;
                 buttons.TryGetValue(_event.data.key, out button);
@@ -57,6 +59,7 @@ namespace JSI
 			{
                 Debug.LogError( ex.ToString() );
 			}
+            replaying_id = Guid.Empty;
         }
 
         private readonly List<HandlerID> clickHandlersID = new List<HandlerID>();
@@ -212,30 +215,30 @@ namespace JSI
 
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-monitor_page-" + thatPage.pageNumber;
 
-            buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(Guid.Empty, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
-                {
-                    key = key,
-                    propID = thatProp.propID,
-                    buttonName = buttonName,
-                    pageNumber = thatPage.pageNumber,
-                    numericID = -1
-                }));
-            });
-
-            buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(Guid.Empty, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
-                {
-                    key = key,
-                    propID = thatProp.propID,
-                    buttonName = buttonName,
-                    pageNumber = thatPage.pageNumber,
-                    numericID = -1
-                } ));
-            });
-
-            if ( !buttons.ContainsKey( key ) )
+            if (!buttons.ContainsKey(key))
             {
+                buttonBehaviour.clickHandlers.Add(() => {
+                    Core.Events.Emit(new Core.Event(replaying_id, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                    {
+                        key = key,
+                        propID = thatProp.propID,
+                        buttonName = buttonName,
+                        pageNumber = thatPage.pageNumber,
+                        numericID = -1
+                    }));
+                });
+
+                buttonBehaviour.releaseHandlers.Add(() => {
+                    Core.Events.Emit(new Core.Event(replaying_id, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                    {
+                        key = key,
+                        propID = thatProp.propID,
+                        buttonName = buttonName,
+                        pageNumber = thatPage.pageNumber,
+                        numericID = -1
+                    } ));
+                });
+
                 buttons.Add(key, buttonBehaviour);
             }
         }
@@ -262,29 +265,29 @@ namespace JSI
 
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked-" + numericID;
 
-            buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(Guid.Empty, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
-                {
-                    key = key,
-                    propID = thatProp.propID,
-                    buttonName = buttonName,
-                    pageNumber = -1,
-                    numericID = numericID
-                }));
-            });
-            buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(Guid.Empty, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
-                {
-                    key = key,
-                    propID = thatProp.propID,
-                    buttonName = buttonName,
-                    pageNumber = -1,
-                    numericID = numericID
-                }));
-            });
-
-            if ( !buttons.ContainsKey(key))
+            if (!buttons.ContainsKey(key))
             {
+                buttonBehaviour.clickHandlers.Add(() => {
+                    Core.Events.Emit(new Core.Event(replaying_id, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                    {
+                        key = key,
+                        propID = thatProp.propID,
+                        buttonName = buttonName,
+                        pageNumber = -1,
+                        numericID = numericID
+                    }));
+                });
+                buttonBehaviour.releaseHandlers.Add(() => {
+                    Core.Events.Emit(new Core.Event(replaying_id, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                    {
+                        key = key,
+                        propID = thatProp.propID,
+                        buttonName = buttonName,
+                        pageNumber = -1,
+                        numericID = numericID
+                    }));
+                });
+
                 buttons.Add(key, buttonBehaviour);
             }
         }
@@ -305,29 +308,29 @@ namespace JSI
 
             string key = (thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty).ToString() + "-" + thatProp.propID + "-" + buttonName + "-clicked";
 
-            buttonBehaviour.clickHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(Guid.Empty, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData 
-                {
-                    key = key,
-                    propID = thatProp.propID,
-                    buttonName = buttonName,
-                    pageNumber = -1,
-                    numericID = -1
-                }));
-            });
-            buttonBehaviour.releaseHandlers.Add(() => {
-                Core.Events.Emit(new Core.Event(Guid.Empty, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
-                {
-                    key = key,
-                    propID = thatProp.propID,
-                    buttonName = buttonName,
-                    pageNumber = -1,
-                    numericID = -1
-                } ) );
-            });
-
-            if ( !buttons.ContainsKey(key))
+            if (!buttons.ContainsKey(key))
             {
+                buttonBehaviour.clickHandlers.Add(() => {
+                    Core.Events.Emit(new Core.Event(replaying_id, "click", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData 
+                    {
+                        key = key,
+                        propID = thatProp.propID,
+                        buttonName = buttonName,
+                        pageNumber = -1,
+                        numericID = -1
+                    }));
+                });
+                buttonBehaviour.releaseHandlers.Add(() => {
+                    Core.Events.Emit(new Core.Event(replaying_id, "release", thatProp.vessel != null ? thatProp.vessel.id : Guid.Empty, new Core.EventData
+                    {
+                        key = key,
+                        propID = thatProp.propID,
+                        buttonName = buttonName,
+                        pageNumber = -1,
+                        numericID = -1
+                    } ) );
+                });
+
                 buttons.Add(key, buttonBehaviour);
             }
         }

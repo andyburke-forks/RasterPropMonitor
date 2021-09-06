@@ -18,7 +18,7 @@ namespace JSI.Core
         public EventData data { get; internal set; }
         public Event( Guid id, string type, Guid vessel_id, EventData data )
         {
-            this.id = ( id == Guid.Empty ? Guid.NewGuid() : id );
+            this.id = ( id != Guid.Empty ? id : Guid.NewGuid() );
             this.type = type;
             this.vessel_id = vessel_id;
             this.data = data;
